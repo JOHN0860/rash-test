@@ -1,42 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repetitsion Test</title>
+    <title>Milliy Sertifikat RASH</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; background-color: #f4f7f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 350px; text-align: center; }
-        h2 { color: #333; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #e0e0e0; border-radius: 10px; outline: none; box-sizing: border-box; font-size: 16px; }
-        input:focus { border-color: #007bff; }
-        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 10px; font-size: 18px; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #0056b3; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 15px; }
+        .container { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .q-row { display: flex; align-items: center; margin-bottom: 10px; padding: 5px; border-bottom: 1px solid #eee; }
+        .q-num { width: 30px; font-weight: bold; }
+        .options { display: flex; gap: 5px; flex-wrap: wrap; }
+        .opt-btn { width: 35px; height: 35px; border: 1px solid #ccc; border-radius: 5px; background: white; cursor: pointer; }
+        .opt-btn.active { background: #007bff; color: white; border-color: #007bff; }
+        .write-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+        .header { text-align: center; color: #007bff; margin-bottom: 20px; }
+        #send-btn { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 10px; font-size: 18px; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>📝 REPETITSION TEST</h2>
-        <p>Iltimos, test kodini kiriting:</p>
-        <input type="text" id="test_id" placeholder="Masalan: 123">
-        <button onclick="startTest()">Boshlash</button>
+    <div class="container">
+        <div class="header"><h2>NSFL Test Tizimi</h2></div>
+        <div id="test-content">
+            <h4>I Bo'lim: Test (1-33)</h4>
+            <div id="mcq-section"></div>
+            
+            <h4>II Bo'lim: Yozma (34-55)</h4>
+            <div id="written-section"></div>
+        </div>
+        <button id="send-btn" onclick="submitData()">TAYYOR / YUBORISH</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Oynani to'liq ochish
+        tg.expand();
+        
+        // 1-33 MCQ generator
+        const mcqSection = document.getElementById('mcq-section');
+        for(let i=1; i<=33; i++) {
+            let row = document.createElement('div');
+            row.className = 'q-row';
+            row.innerHTML = `<div class="q-num">${i}.</div><div class="options">` + 
+                ['A','B','C','D','E'].map(opt => `<button class="opt-btn" onclick="selectOpt(${i}, '${opt}', this)">${opt}</button>`).join('') + 
+                `</div>`;
+            mcqSection.appendChild(row);
+        }
 
-        function startTest() {
-            let id = document.getElementById('test_id').value;
-            if(id) {
-                // Botga ma'lumot yuborish
-                tg.sendData(id);
-                tg.close();
-            } else {
-                alert("ID kiriting!");
+        // 34-55 Written generator
+        const writtenSection = document.getElementById('written-section');
+        for(let i=34; i<=55; i++) {
+            let row = document.createElement('div');
+            row.className = 'q-row';
+            row.innerHTML = `<div class="q-num">${i}.</div><input type="text" class="write-input" id="q${i}" placeholder="Javobni yozing...">`;
+            writtenSection.appendChild(row);
+        }
+
+        let results = {};
+        function selectOpt(q, opt, btn) {
+            results[q] = opt;
+            let btns = btn.parentElement.querySelectorAll('.opt-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function submitData() {
+            for(let i=34; i<=55; i++) {
+                results[i] = document.getElementById(`q${i}`).value;
             }
+            tg.sendData(JSON.stringify(results));
+            tg.close();
         }
     </script>
 </body>
 </html>
+
