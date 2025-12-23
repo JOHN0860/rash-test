@@ -2,68 +2,139 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rash Test System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milliy Sertifikat Testi</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script defer src="https://unpkg.com/mathlive"></script>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 15px; padding-bottom: 100px; }
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #0088cc; }
-        .options { display: flex; justify-content: space-around; margin-top: 10px; }
-        .opt-btn { width: 45px; height: 45px; border: 1px solid #ccc; border-radius: 50%; background: white; font-weight: bold; }
-        .opt-btn.selected { background: #0088cc; color: white; border-color: #0088cc; }
-        math-field { width: 100%; font-size: 20px; border: 1px solid #0088cc; border-radius: 8px; margin-top: 10px; background: #fff; }
-        #submit-btn { position: fixed; bottom: 20px; left: 5%; width: 90%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; z-index: 1000; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 15px; margin: 0; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        .question-block { margin-bottom: 25px; padding: 15px; border: 1px solid #e1e4e8; border-radius: 8px; background: #fff; }
+        .q-title { font-weight: bold; margin-bottom: 10px; display: block; color: #34495e; }
+        
+        /* Tugmalar dizayni */
+        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); gap: 8px; }
+        .opt-btn { 
+            padding: 10px 5px; border: 1px solid #cbd5e0; border-radius: 6px; 
+            background: white; cursor: pointer; font-weight: bold; transition: all 0.2s;
+        }
+        .opt-btn.selected { background-color: #3498db; color: white; border-color: #2980b9; transform: scale(1.05); }
+
+        /* Matematik input dizayni */
+        math-field { 
+            width: 100%; border: 1px solid #cbd5e0; border-radius: 6px; 
+            padding: 8px; font-size: 18px; background: #f8f9fa; margin-bottom: 10px;
+        }
+        math-field:focus-within { border-color: #3498db; outline: none; box-shadow: 0 0 0 3px rgba(52,152,219,0.2); }
+
+        /* Yuborish tugmasi */
+        #send-btn { 
+            width: 100%; padding: 16px; background: #27ae60; color: white; 
+            border: none; border-radius: 8px; font-size: 18px; font-weight: bold; 
+            cursor: pointer; margin-top: 20px; 
+        }
+        #send-btn:active { transform: scale(0.98); }
+        .sub-q { margin-top: 10px; font-weight: normal; color: #555; }
     </style>
 </head>
 <body>
-    <div id="app">
-        <h2 id="title">Test Tizimi</h2>
-        <div id="questions-container"></div>
-        <button id="submit-btn" onclick="finish()">Natijani yuborish</button>
-    </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        const container = document.getElementById('questions-container');
-        const results = {};
+<div class="container">
+    <h2 id="page-title">Test Javoblari</h2>
+    <div id="test-container"></div>
+    <button id="send-btn" onclick="sendAnswers()">Javoblarni Yuborish</button>
+</div>
 
-        // URL orqali rejimni aniqlash (Test yechish yoki Yaratish)
-        const urlParams = new URLSearchParams(window.location.search);
-        const mode = urlParams.get('mode');
-        if(mode === 'create') document.getElementById('title').innerText = "Yangi Test Yaratish";
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand(); 
 
-        for (let i = 1; i <= 55; i++) {
+    // URL orqali qaysi rejimdaligini aniqlash (Test yaratish yoki Yechish)
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode'); 
+    if (mode === 'create') {
+        document.getElementById('page-title').innerText = "🆕 Yangi Test Yaratish";
+        document.getElementById('send-btn').innerText = "Testni Saqlash va Kod olish";
+    }
+
+    const testContainer = document.getElementById('test-container');
+    const answers = {};
+
+    function renderQuestions() {
+        for (let i = 1; i <= 45; i++) {
             const div = document.createElement('div');
-            div.className = 'card';
+            div.className = 'question-block';
+
+            // 1 dan 32 gacha: A, B, C, D
             if (i <= 32) {
-                div.innerHTML = `<b>${i}-savol:</b><div class="options">` + 
-                    ['A', 'B', 'C', 'D'].map(o => `<button class="opt-btn" onclick="setOpt(${i},'${o}', this)">${o}</button>`).join('') + `</div>`;
-            } else {
-                div.innerHTML = `<b>${i}-savol:</b><br><math-field id="mf${i}" virtual-keyboard-policy="manual"></math-field>
-                <button style="margin-top:5px" onclick="document.getElementById('mf${i}').executeCommand('toggleVirtualKeyboard')">⌨️ Klaviatura</button>`;
-                // Kasr yozish uchun math-field'ga e'tibor bering
+                div.innerHTML = `
+                    <span class="q-title">${i}-savol:</span>
+                    <div class="options-grid">
+                        ${['A','B','C','D'].map(opt => 
+                            `<button class="opt-btn" id="q${i}_${opt}" onclick="selectOpt(${i}, '${opt}')">${opt}</button>`
+                        ).join('')}
+                    </div>`;
+            } 
+            // 33 dan 35 gacha: A, B, C, D, E, F
+            else if (i >= 33 && i <= 35) {
+                div.innerHTML = `
+                    <span class="q-title">${i}-savol:</span>
+                    <div class="options-grid" style="grid-template-columns: repeat(6, 1fr);">
+                        ${['A','B','C','D','E','F'].map(opt => 
+                            `<button class="opt-btn" id="q${i}_${opt}" onclick="selectOpt(${i}, '${opt}')">${opt}</button>`
+                        ).join('')}
+                    </div>`;
+            } 
+            // 36 dan 45 gacha: (a) va (b) matematik yozma
+            else {
+                div.innerHTML = `
+                    <span class="q-title">${i}-savol (Yozma):</span>
+                    
+                    <div class="sub-q">(${i}a)</div>
+                    <math-field id="q${i}a" virtual-keyboard-mode="manual" oninput="saveMath('${i}a', this.value)"></math-field>
+                    
+                    <div class="sub-q">(${i}b)</div>
+                    <math-field id="q${i}b" virtual-keyboard-mode="manual" oninput="saveMath('${i}b', this.value)"></math-field>
+                `;
             }
-            container.appendChild(div);
+            testContainer.appendChild(div);
         }
+    }
 
-        function setOpt(q, o, btn) {
-            const parent = btn.parentElement;
-            Array.from(parent.children).forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            results[q] = o;
-        }
+    // Variant tanlash
+    window.selectOpt = function(qNum, val) {
+        // Eski tanlovni o'chirish
+        const parent = document.getElementById(`q${qNum}_${val}`).parentElement;
+        Array.from(parent.children).forEach(btn => btn.classList.remove('selected'));
+        
+        // Yangisini belgilash
+        document.getElementById(`q${qNum}_${val}`).classList.add('selected');
+        answers[qNum] = val;
+    }
 
-        function finish() {
-            for(let i=33; i<=55; i++) {
-                const val = document.getElementById('mf'+i)?.value;
-                if(val) results[i] = val;
-            }
-            tg.sendData(JSON.stringify(results));
-            tg.close();
+    // Matematik javobni saqlash
+    window.saveMath = function(key, val) {
+        answers[key] = val; // LaTeX formatda saqlanadi (masalan: \frac{1}{2})
+    }
+
+    // Yuborish
+    window.sendAnswers = function() {
+        if (Object.keys(answers).length === 0) {
+            tg.showPopup({title: "Diqqat", message: "Hech qanday javob belgilanmadi!"});
+            return;
         }
-    </script>
+        // Ma'lumotni botga yuborish
+        const data = JSON.stringify({
+            mode: mode || 'solve', // 'create' yoki 'solve'
+            answers: answers
+        });
+        tg.sendData(data);
+    }
+
+    // Sahifa yuklanganda ishga tushirish
+    renderQuestions();
+
+</script>
 </body>
 </html>
