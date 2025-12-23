@@ -3,86 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Milliy Sertifikat WebApp</title>
+    <title>Milliy Sertifikat Platformasi</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script defer src="https://unpkg.com/mathlive"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; }
-        .container { padding: 15px; }
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .card { background: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; }
-        .card i { font-size: 30px; color: #0088cc; margin-bottom: 10px; }
-        .card h3 { margin: 5px 0; font-size: 14px; }
-        .header { background: #0088cc; color: white; padding: 20px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
-        .screen { display: none; padding: 15px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 0; user-select: none; }
+        
+        /* --- MENU EKRANI --- */
+        #menu-screen { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .menu-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px; border-radius: 20px; text-align: center;
+            box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3); cursor: pointer; transition: transform 0.2s;
+        }
+        .menu-card:active { transform: scale(0.98); }
+        .menu-card h2 { margin: 10px 0 5px; font-size: 22px; }
+        .menu-card i { font-size: 40px; margin-bottom: 10px; }
+        
+        .card-green { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .card-orange { background: linear-gradient(135deg, #fce38a 0%, #f38181 100%); color: #333; }
+        .card-blue { background: linear-gradient(135deg, #2980b9 0%, #6dd5fa 100%); }
+
+        /* --- TEST EKRANI --- */
+        .screen { display: none; padding: 15px; padding-bottom: 80px; }
         .active { display: block; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn-main { background: #0088cc; color: white; border: none; width: 100%; padding: 15px; border-radius: 10px; font-weight: bold; margin-top: 10px; }
+        
+        .header { display: flex; align-items: center; margin-bottom: 20px; }
+        .back-btn { font-size: 24px; color: #333; cursor: pointer; margin-right: 15px; }
+        
+        .q-block { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .opt-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; justify-content: center; }
+        .opt-btn {
+            width: 45px; height: 45px; border-radius: 50%; border: 2px solid #e0e0e0;
+            background: white; font-weight: bold; font-size: 16px; color: #555; cursor: pointer;
+        }
+        .opt-btn.selected { background: #38ef7d; color: white; border-color: #38ef7d; transform: scale(1.1); }
+        
+        math-field { width: 100%; border: 1px solid #ccc; border-radius: 8px; padding: 5px; margin-top: 5px; background: #f9f9f9; }
+
+        .action-btn {
+            position: fixed; bottom: 20px; left: 5%; width: 90%; padding: 15px;
+            background: #2c3e50; color: white; border: none; border-radius: 12px;
+            font-size: 18px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2); cursor: pointer;
+        }
+
+        input[type="text"] { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; box-sizing: border-box; }
+        
+        .info-text { background: #fff3cd; color: #856404; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
     </style>
 </head>
 <body>
-    <div id="main-menu" class="screen active">
-        <div class="header">
-            <h2>Asosiy Menyu</h2>
-            <p id="user-name">Xush kelibsiz!</p>
+
+    <div id="menu-screen">
+        <div style="text-align: center; margin-bottom: 10px;">
+            <h1 style="color: #333;">Milliy Sertifikat</h1>
+            <p style="color: #777;">Hamma xizmatlar bitta joyda</p>
         </div>
-        <div class="container">
-            <div class="menu-grid">
-                <div class="card" onclick="showScreen('solve-screen')">
-                    <i class="fas fa-edit"></i>
-                    <h3>Test Yechish</h3>
-                </div>
-                <div class="card" onclick="showScreen('create-screen')">
-                    <i class="fas fa-plus-circle"></i>
-                    <h3>Test Yaratish</h3>
-                </div>
-                <div class="card" onclick="alert('Tez orada...')">
-                    <i class="fas fa-chart-bar"></i>
-                    <h3>Natijalarim</h3>
-                </div>
-                <div class="card" onclick="alert('Tez orada...')">
-                    <i class="fas fa-user"></i>
-                    <h3>Profilim</h3>
-                </div>
-            </div>
+
+        <div class="menu-card card-green" onclick="openSolveMode()">
+            <i class="fas fa-pencil-alt"></i>
+            <h2>Test Yechish</h2>
+            <p>Kodni kiritib testni boshlang</p>
+        </div>
+
+        <div class="menu-card card-blue" onclick="openCreateMode()">
+            <i class="fas fa-plus-circle"></i>
+            <h2>Test Yaratish</h2>
+            <p>Kalitlarni kiritib kod oling</p>
+        </div>
+        
+        <div class="menu-card card-orange" onclick="alert('Natijalar bot orqali yuboriladi!')">
+            <i class="fas fa-chart-line"></i>
+            <h2>Natijalar</h2>
+            <p>Reyting va RASH ballar</p>
         </div>
     </div>
 
     <div id="solve-screen" class="screen">
-        <h3>Test Yechish</h3>
-        <input type="text" id="solve-code" placeholder="Test kodini kiriting">
-        <input type="text" id="solve-answers" placeholder="Javoblar (masalan: ABCD...)">
-        <button class="btn-main" onclick="sendData('solve')">Yuborish</button>
-        <button class="btn-main" style="background:#ccc" onclick="showScreen('main-menu')">Orqaga</button>
+        <div class="header">
+            <i class="fas fa-arrow-left back-btn" onclick="goHome()"></i>
+            <h2>Test Yechish</h2>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label>Test Kodini Kiriting:</label>
+            <input type="text" id="solve-code" placeholder="Masalan: A1B2C" style="text-transform: uppercase;">
+        </div>
+
+        <div id="solve-questions"></div>
+        <button class="action-btn" onclick="submitAnswers('solve')">Javoblarni Yuborish</button>
     </div>
 
     <div id="create-screen" class="screen">
-        <h3>Yangi Test Yaratish</h3>
-        <p>To'g'ri javoblarni kiriting:</p>
-        <input type="text" id="create-answers" placeholder="Masalan: ABCC... (45 ta)">
-        <button class="btn-main" onclick="sendData('create')">Kodni olish</button>
-        <button class="btn-main" style="background:#ccc" onclick="showScreen('main-menu')">Orqaga</button>
+        <div class="header">
+            <i class="fas fa-arrow-left back-btn" onclick="goHome()"></i>
+            <h2>Yangi Test Yaratish</h2>
+        </div>
+        
+        <div class="info-text">
+            ⚠️ <strong>O'qituvchi diqqatiga:</strong> Iltimos, barcha to'g'ri javoblarni belgilab chiqing. Bu RASH moduli to'g'ri ishlashi uchun zarur.
+        </div>
+
+        <div id="create-questions"></div>
+        <button class="action-btn" style="background: #e74c3c;" onclick="submitAnswers('create')">Testni Saqlash va Kod Olish</button>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    const answers = {}; 
 
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
+    function goHome() {
+        document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+        document.getElementById('menu-screen').style.display = 'flex';
+        window.scrollTo(0,0);
+    }
 
-        function sendData(mode) {
-            let data = { mode: mode };
-            if(mode === 'solve') {
-                data.code = document.getElementById('solve-code').value;
-                data.ans = document.getElementById('solve-answers').value;
-            } else {
-                data.ans = document.getElementById('create-answers').value;
+    function openSolveMode() {
+        document.getElementById('menu-screen').style.display = 'none';
+        document.getElementById('solve-screen').classList.add('active');
+        renderQuestions('solve-questions');
+        window.scrollTo(0,0);
+    }
+
+    function openCreateMode() {
+        document.getElementById('menu-screen').style.display = 'none';
+        document.getElementById('create-screen').classList.add('active');
+        renderQuestions('create-questions');
+        window.scrollTo(0,0);
+    }
+
+    function renderQuestions(containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+        answers[containerId] = {}; // Reset answers for specific mode
+
+        for (let i = 1; i <= 45; i++) {
+            const div = document.createElement('div');
+            div.className = 'q-block';
+            let html = `<strong>${i}-savol:</strong> `;
+
+            // 1-32: ABCD
+            if (i <= 32) {
+                html += `<div class="opt-grid">`;
+                ['A','B','C','D'].forEach(opt => {
+                    html += `<button class="opt-btn" onclick="select(this, '${containerId}', ${i}, '${opt}')">${opt}</button>`;
+                });
+                html += `</div>`;
             }
-            tg.sendData(JSON.stringify(data));
+            // 33-35: ABCDEF
+            else if (i <= 35) {
+                html += `<div class="opt-grid">`;
+                ['A','B','C','D','E','F'].forEach(opt => {
+                    html += `<button class="opt-btn" onclick="select(this, '${containerId}', ${i}, '${opt}')">${opt}</button>`;
+                });
+                html += `</div>`;
+            }
+            // 36-45: Yozma
+            else {
+                html += `<br><span>(a)</span> <math-field virtual-keyboard-mode="manual" oninput="saveMath('${containerId}', '${i}a', this.value)"></math-field>`;
+                html += `<br><span>(b)</span> <math-field virtual-keyboard-mode="manual" oninput="saveMath('${containerId}', '${i}b', this.value)"></math-field>`;
+            }
+            div.innerHTML = html;
+            container.appendChild(div);
         }
-    </script>
+    }
+
+    window.select = function(btn, context, qNum, val) {
+        // Remove active class from siblings
+        const parent = btn.parentElement;
+        Array.from(parent.children).forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        
+        if (!answers[context]) answers[context] = {};
+        answers[context][qNum] = val;
+    }
+
+    window.saveMath = function(context, key, val) {
+        if (!answers[context]) answers[context] = {};
+        answers[context][key] = val;
+    }
+
+    window.submitAnswers = function(mode) {
+        const context = mode === 'create' ? 'create-questions' : 'solve-questions';
+        const currentAnswers = answers[context] || {};
+        
+        // Validation
+        if (Object.keys(currentAnswers).length === 0) {
+            tg.showPopup({title: "Diqqat", message: "Hech qanday javob belgilanmadi!"});
+            return;
+        }
+
+        let payload = {
+            mode: mode,
+            answers: currentAnswers
+        };
+
+        if (mode === 'solve') {
+            const code = document.getElementById('solve-code').value.trim().toUpperCase();
+            if (!code) {
+                tg.showPopup({title: "Xatolik", message: "Test kodini kiriting!"});
+                return;
+            }
+            payload.test_code = code;
+        }
+
+        tg.sendData(JSON.stringify(payload));
+    }
+</script>
 </body>
 </html>
