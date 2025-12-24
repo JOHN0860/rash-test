@@ -5,62 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; background-color: #f4f4f4; padding: 20px; text-align: center; }
-        .container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none; }
-        h3 { color: #333; margin-bottom: 15px; }
-        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-        button { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
-        .btn-blue { background-color: #0088cc; color: white; }
-        .btn-green { background-color: #28a745; color: white; }
+        body { font-family: sans-serif; background: #f0f2f5; padding: 10px; }
+        .card { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .q-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .q-num { font-weight: bold; width: 30px; }
+        .options { display: flex; gap: 8px; }
+        .opt { width: 35px; height: 35px; border: 1.5px solid #0088cc; border-radius: 50%; 
+               display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; color: #0088cc; }
+        .opt.active { background: #0088cc; color: white; }
+        .footer { position: fixed; bottom: 0; left: 0; width: 100%; padding: 15px; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; gap: 10px; box-sizing: border-box; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .btn-send { background: #0088cc; color: white; }
+        input#test_id { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        #questions-container { margin-bottom: 80px; }
     </style>
 </head>
 <body>
 
-    <div id="create-view" class="container">
-        <h3>➕ Yangi Test Yaratish</h3>
-        <p>To'g'ri javoblarni kiriting (abcd...):</p>
-        <input type="text" id="keys" placeholder="Masalan: abcdabcd...">
-        <button class="btn-blue" onclick="sendData('create')">Test Kodini Olish</button>
+    <div class="card">
+        <h3 id="title">📋 Test Tizimi</h3>
+        <input type="number" id="test_id" placeholder="Test kodini kiriting..." style="display:none;">
+        
+        <div id="questions-container">
+            </div>
     </div>
 
-    <div id="check-view" class="container">
-        <h3>📝 Javoblarni Tekshirish</h3>
-        <input type="number" id="test_code" placeholder="Test kodi (masalan: 12345)">
-        <input type="text" id="answers" placeholder="Sizning javoblaringiz (abcd...)">
-        <button class="btn-green" onclick="sendData('check')">Natijani Bilish</button>
+    <div class="footer">
+        <button class="btn-send" onclick="submitData()">Tasdiqlash</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-
-        // URL orqali qaysi bo'lim ochilishini aniqlaymiz
+        
         const urlParams = new URLSearchParams(window.location.search);
-        const mode = urlParams.get('mode');
+        const mode = urlParams.get('mode'); // 'create' yoki 'check'
+        const total = 30; // Savollar soni
+        const answers = {};
 
-        if (mode === 'create') {
-            document.getElementById('create-view').style.display = 'block';
+        if(mode === 'check') {
+            document.getElementById('test_id').style.display = 'block';
+            document.getElementById('title').innerText = "📝 Javoblarni tekshirish";
         } else {
-            document.getElementById('check-view').style.display = 'block';
+            document.getElementById('title').innerText = "➕ Yangi test yaratish";
         }
 
-        function sendData(action) {
-            let data = { action: action };
-            
-            if (action === 'create') {
-                let val = document.getElementById('keys').value;
-                if (!val) return alert("Javoblarni yozing!");
-                data.keys = val.toLowerCase().replace(/[^a-z]/g, ""); // Faqat harflar
-            } 
-            else if (action === 'check') {
-                let code = document.getElementById('test_code').value;
-                let ans = document.getElementById('answers').value;
-                if (!code || !ans) return alert("Ma'lumotlarni to'ldiring!");
-                data.code = code;
-                data.answers = ans.toLowerCase().replace(/[^a-z]/g, "");
+        // Katakchalarni yaratish
+        const container = document.getElementById('questions-container');
+        for (let i = 1; i <= total; i++) {
+            const row = document.createElement('div');
+            row.className = 'q-row';
+            row.innerHTML = `
+                <div class="q-num">${i}.</div>
+                <div class="options">
+                    <div class="opt" onclick="select(${i}, 'a', this)">A</div>
+                    <div class="opt" onclick="select(${i}, 'b', this)">B</div>
+                    <div class="opt" onclick="select(${i}, 'c', this)">C</div>
+                    <div class="opt" onclick="select(${i}, 'd', this)">D</div>
+                </div>
+            `;
+            container.appendChild(row);
+        }
+
+        function select(q, val, el) {
+            const parent = el.parentElement;
+            parent.querySelectorAll('.opt').forEach(child => child.classList.remove('active'));
+            el.classList.add('active');
+            answers[q] = val;
+        }
+
+        function submitData() {
+            let resultString = "";
+            for(let i=1; i<=total; i++) {
+                resultString += answers[i] || "?"; // Belgilanmagan bo'lsa ? ketadi
             }
 
-            tg.sendData(JSON.stringify(data));
+            if(mode === 'create') {
+                if(resultString.includes("?")) return alert("Hamma javoblarni belgilang!");
+                tg.sendData(JSON.stringify({ action: 'create', keys: resultString }));
+            } else {
+                const code = document.getElementById('test_id').value;
+                if(!code) return alert("Test kodini kiriting!");
+                tg.sendData(JSON.stringify({ action: 'check', code: code, answers: resultString }));
+            }
         }
     </script>
 </body>
