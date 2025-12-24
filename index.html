@@ -5,31 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; }
-        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        h3 { color: #0088cc; margin-top: 0; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #0088cc; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; text-align: center; }
+        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
+        button { width: 100%; padding: 14px; background: #0088cc; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        h3 { color: #333; margin-top: 0; }
     </style>
 </head>
 <body>
-    <div id="create-box" class="card">
-        <h3>➕ Test Yaratish</h3>
-        <input type="text" id="ans" placeholder="Javoblar (masalan: ABCC...)">
+    <div class="card">
+        <h3>➕ Yangi Test Yaratish</h3>
+        <p>To'g'ri javoblarni yozing:</p>
+        <input type="text" id="ans" placeholder="Masalan: abcdabcd...">
         <button onclick="send('create')">Kodni Olish</button>
     </div>
-    <div id="result-box" class="card">
+
+    <div class="card">
         <h3>📊 Natijalarni Ko'rish</h3>
-        <input type="text" id="code" placeholder="Test kodini kiriting">
-        <button onclick="send('results')">Natijalarni Chiqarish</button>
+        <p>Test kodini kiriting:</p>
+        <input type="number" id="code" placeholder="Test kodi">
+        <button onclick="send('results')">Ko'rish</button>
     </div>
+
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+
         function send(mode) {
             let data = { mode: mode };
-            if(mode === 'create') data.ans = document.getElementById('ans').value;
-            if(mode === 'results') data.code = document.getElementById('code').value;
+            if(mode === 'create') {
+                let val = document.getElementById('ans').value;
+                if(!val) return alert("Javoblarni yozing!");
+                data.ans = val;
+            }
+            if(mode === 'results') {
+                let val = document.getElementById('code').value;
+                if(!val) return alert("Kodni yozing!");
+                data.code = val;
+            }
             tg.sendData(JSON.stringify(data));
         }
     </script>
