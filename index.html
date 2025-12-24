@@ -5,44 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; text-align: center; }
-        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
-        button { width: 100%; padding: 14px; background: #0088cc; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        h3 { color: #333; margin-top: 0; }
+        body { font-family: sans-serif; background-color: #f4f4f4; padding: 20px; text-align: center; }
+        .container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none; }
+        h3 { color: #333; margin-bottom: 15px; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
+        button { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .btn-blue { background-color: #0088cc; color: white; }
+        .btn-green { background-color: #28a745; color: white; }
     </style>
 </head>
 <body>
-    <div class="card">
+
+    <div id="create-view" class="container">
         <h3>➕ Yangi Test Yaratish</h3>
-        <p>To'g'ri javoblarni yozing:</p>
-        <input type="text" id="ans" placeholder="Masalan: abcdabcd...">
-        <button onclick="send('create')">Kodni Olish</button>
+        <p>To'g'ri javoblarni kiriting (abcd...):</p>
+        <input type="text" id="keys" placeholder="Masalan: abcdabcd...">
+        <button class="btn-blue" onclick="sendData('create')">Test Kodini Olish</button>
     </div>
 
-    <div class="card">
-        <h3>📊 Natijalarni Ko'rish</h3>
-        <p>Test kodini kiriting:</p>
-        <input type="number" id="code" placeholder="Test kodi">
-        <button onclick="send('results')">Ko'rish</button>
+    <div id="check-view" class="container">
+        <h3>📝 Javoblarni Tekshirish</h3>
+        <input type="number" id="test_code" placeholder="Test kodi (masalan: 12345)">
+        <input type="text" id="answers" placeholder="Sizning javoblaringiz (abcd...)">
+        <button class="btn-green" onclick="sendData('check')">Natijani Bilish</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function send(mode) {
-            let data = { mode: mode };
-            if(mode === 'create') {
-                let val = document.getElementById('ans').value;
-                if(!val) return alert("Javoblarni yozing!");
-                data.ans = val;
+        // URL orqali qaysi bo'lim ochilishini aniqlaymiz
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+
+        if (mode === 'create') {
+            document.getElementById('create-view').style.display = 'block';
+        } else {
+            document.getElementById('check-view').style.display = 'block';
+        }
+
+        function sendData(action) {
+            let data = { action: action };
+            
+            if (action === 'create') {
+                let val = document.getElementById('keys').value;
+                if (!val) return alert("Javoblarni yozing!");
+                data.keys = val.toLowerCase().replace(/[^a-z]/g, ""); // Faqat harflar
+            } 
+            else if (action === 'check') {
+                let code = document.getElementById('test_code').value;
+                let ans = document.getElementById('answers').value;
+                if (!code || !ans) return alert("Ma'lumotlarni to'ldiring!");
+                data.code = code;
+                data.answers = ans.toLowerCase().replace(/[^a-z]/g, "");
             }
-            if(mode === 'results') {
-                let val = document.getElementById('code').value;
-                if(!val) return alert("Kodni yozing!");
-                data.code = val;
-            }
+
             tg.sendData(JSON.stringify(data));
         }
     </script>
