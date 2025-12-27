@@ -2,38 +2,52 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<title>36–45 Matematik javoblar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Matematika – Milliy Sertifikat</title>
 
 <script src="https://unpkg.com/mathlive"></script>
 
 <style>
+* {
+    box-sizing: border-box;
+}
 body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    padding: 15px;
+    margin: 0;
+    padding: 12px;
+    font-family: system-ui, sans-serif;
+    background: #f2f4f7;
+}
+h1 {
+    font-size: 20px;
+    margin-bottom: 12px;
 }
 .card {
-    background: white;
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 15px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 14px;
+}
+label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
 }
 math-field {
     width: 100%;
-    min-height: 45px;
+    min-height: 46px;
     font-size: 20px;
     border: 2px solid #f2b705;
     border-radius: 10px;
-    padding: 8px;
+    padding: 6px;
 }
-.kbd-btn {
-    margin-top: 8px;
+.kbd {
+    margin-top: 6px;
     background: #f2b705;
-    color: black;
     border: none;
-    padding: 6px 12px;
+    padding: 6px 10px;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 13px;
 }
 .submit {
     width: 100%;
@@ -41,51 +55,49 @@ math-field {
     color: white;
     border: none;
     padding: 14px;
-    font-size: 18px;
-    border-radius: 12px;
+    font-size: 17px;
+    border-radius: 14px;
 }
 </style>
 </head>
 <body>
 
-<h2>36–45 savollar (a)</h2>
+<h1>📘 36–45 Savollar</h1>
 
-<div id="questions"></div>
+<div id="box"></div>
 
 <button class="submit">✅ TESTNI YAKUNLASH</button>
 
 <script>
-const container = document.getElementById("questions");
+const box = document.getElementById("box");
 
+// 36–45 a va b
 for (let i = 36; i <= 45; i++) {
-    container.innerHTML += `
-    <div class="card">
-        <b>${i}-savol (a):</b>
-        <math-field id="q${i}"></math-field>
-        <button class="kbd-btn" onclick="openKeyboard('q${i}')">
-            🧮 Klaviaturani ochish
-        </button>
-    </div>
-    `;
+    ["a", "b"].forEach(v => {
+        box.innerHTML += `
+        <div class="card">
+            <label>${i}-savol (${v})</label>
+            <math-field id="q${i}${v}"></math-field>
+            <button class="kbd" onclick="openKB('q${i}${v}')">
+                🧮 Klaviatura
+            </button>
+        </div>
+        `;
+    });
 }
 
-function openKeyboard(id) {
+// klaviaturani ochish
+function openKB(id) {
     const mf = document.getElementById(id);
     mf.focus();
-
-    mf.setOptions({
-        virtualKeyboardMode: "onfocus",
-        virtualKeyboards: "numeric symbols"
-    });
-
     mf.executeCommand("showVirtualKeyboard");
 }
 
-// KASR tugmasini majburiy ko‘rsatish
+// maxsus matematik klaviatura
 MathLive.makeSharedVirtualKeyboard({
     customVirtualKeyboards: {
-        "numeric symbols": {
-            label: "Matematika",
+        math: {
+            label: "Math",
             rows: [
                 ["7","8","9","+","-"],
                 ["4","5","6","*","/"],
@@ -94,6 +106,12 @@ MathLive.makeSharedVirtualKeyboard({
             ]
         }
     }
+});
+
+// default qilib shu klaviatura chiqsin
+MathLive.setOptions({
+    virtualKeyboardMode: "manual",
+    virtualKeyboards: "math"
 });
 </script>
 
