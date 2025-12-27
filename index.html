@@ -1,103 +1,100 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <title>Milliy Sertifikat – Matematika</title>
+<meta charset="UTF-8">
+<title>36–45 Matematik javoblar</title>
 
-    <!-- MathLive -->
-    <script src="https://unpkg.com/mathlive"></script>
+<script src="https://unpkg.com/mathlive"></script>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            padding: 20px;
-        }
-        .card {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        h2 {
-            margin-top: 0;
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            background: #2a9df4;
-            color: white;
-            font-size: 16px;
-        }
-        .variant {
-            margin: 5px 0;
-        }
-        math-field {
-            width: 100%;
-            min-height: 40px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            padding: 5px;
-        }
-    </style>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    padding: 15px;
+}
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+math-field {
+    width: 100%;
+    min-height: 45px;
+    font-size: 20px;
+    border: 2px solid #f2b705;
+    border-radius: 10px;
+    padding: 8px;
+}
+.kbd-btn {
+    margin-top: 8px;
+    background: #f2b705;
+    color: black;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+.submit {
+    width: 100%;
+    background: #0d6efd;
+    color: white;
+    border: none;
+    padding: 14px;
+    font-size: 18px;
+    border-radius: 12px;
+}
+</style>
 </head>
 <body>
 
-<h1>📘 Matematika – Milliy Sertifikat</h1>
+<h2>36–45 savollar (a)</h2>
 
-<div class="card">
-    <h2>🔑 Test kodi</h2>
-    <input type="text" id="testCode" placeholder="Test kodini kiriting">
-</div>
+<div id="questions"></div>
 
-<!-- 1–32 ABCD -->
-<div class="card">
-    <h2>1-savol</h2>
-    <div class="variant"><input type="radio" name="q1"> A</div>
-    <div class="variant"><input type="radio" name="q1"> B</div>
-    <div class="variant"><input type="radio" name="q1"> C</div>
-    <div class="variant"><input type="radio" name="q1"> D</div>
-</div>
-
-<!-- 33–35 ABCDEF -->
-<div class="card">
-    <h2>33-savol</h2>
-    <div class="variant"><input type="radio" name="q33"> A</div>
-    <div class="variant"><input type="radio" name="q33"> B</div>
-    <div class="variant"><input type="radio" name="q33"> C</div>
-    <div class="variant"><input type="radio" name="q33"> D</div>
-    <div class="variant"><input type="radio" name="q33"> E</div>
-    <div class="variant"><input type="radio" name="q33"> F</div>
-</div>
-
-<!-- 36–45 (a) (b) -->
-<div class="card">
-    <h2>36 (a)</h2>
-    <math-field id="q36a"></math-field>
-</div>
-
-<div class="card">
-    <h2>36 (b)</h2>
-    <math-field id="q36b"></math-field>
-</div>
-
-<div class="card">
-    <h2>45 (a)</h2>
-    <math-field id="q45a"></math-field>
-</div>
-
-<div class="card">
-    <h2>45 (b)</h2>
-    <math-field id="q45b"></math-field>
-</div>
-
-<button onclick="submitTest()">📤 Testni yuborish</button>
+<button class="submit">✅ TESTNI YAKUNLASH</button>
 
 <script>
-function submitTest() {
-    alert("Test yuborildi (keyingi bosqichda backendga jo‘natamiz)");
+const container = document.getElementById("questions");
+
+for (let i = 36; i <= 45; i++) {
+    container.innerHTML += `
+    <div class="card">
+        <b>${i}-savol (a):</b>
+        <math-field id="q${i}"></math-field>
+        <button class="kbd-btn" onclick="openKeyboard('q${i}')">
+            🧮 Klaviaturani ochish
+        </button>
+    </div>
+    `;
 }
+
+function openKeyboard(id) {
+    const mf = document.getElementById(id);
+    mf.focus();
+
+    mf.setOptions({
+        virtualKeyboardMode: "onfocus",
+        virtualKeyboards: "numeric symbols"
+    });
+
+    mf.executeCommand("showVirtualKeyboard");
+}
+
+// KASR tugmasini majburiy ko‘rsatish
+MathLive.makeSharedVirtualKeyboard({
+    customVirtualKeyboards: {
+        "numeric symbols": {
+            label: "Matematika",
+            rows: [
+                ["7","8","9","+","-"],
+                ["4","5","6","*","/"],
+                ["1","2","3","(",")"],
+                ["0",".","\\frac{#@}{#?}","\\sqrt{#0}","\\pi"]
+            ]
+        }
+    }
+});
 </script>
 
 </body>
