@@ -2,138 +2,103 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Milliy Sertifikat – Matematika</title>
+
+    <!-- MathLive -->
+    <script src="https://unpkg.com/mathlive"></script>
+
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 10px; padding-bottom: 300px; }
-        .card { background: white; border-radius: 12px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .q-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .q-num { width: 40px; font-weight: bold; color: #444; }
-        .options { display: flex; gap: 5px; flex-wrap: wrap; }
-        .opt { width: 35px; height: 35px; border: 1.5px solid #0088cc; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: #0088cc; cursor: pointer; }
-        .opt.active { background: #0088cc; color: white; }
-        
-        /* Klaviatura qismi */
-        .math-input-container { display: flex; align-items: center; gap: 10px; margin: 10px 0; padding: 10px; background: #fff; border: 1.5px solid #fbca04; border-radius: 8px; }
-        .math-display { flex-grow: 1; min-height: 30px; font-size: 18px; font-family: 'Courier New', monospace; }
-        
-        /* Virtual Klaviatura */
-        .keyboard { position: fixed; bottom: 0; left: 0; width: 100%; background: #d1d4d9; padding: 5px; box-sizing: border-box; display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; border-top: 1px solid #aaa; z-index: 1000; }
-        .key { background: white; border: none; border-radius: 5px; padding: 12px 0; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        .key:active { background: #bbb; }
-        .key.wide { grid-column: span 2; background: #a5abb6; }
-        .btn-send { grid-column: span 10; background: #0088cc; color: white; padding: 15px; margin-top: 5px; border-radius: 8px; font-weight: bold; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #2a9df4;
+            color: white;
+            font-size: 16px;
+        }
+        .variant {
+            margin: 5px 0;
+        }
+        math-field {
+            width: 100%;
+            min-height: 40px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
 
-<div class="card" id="main-content">
-    <h3 id="mode-title" style="text-align:center;">Milliy Sertifikat Testi</h3>
-    <input type="number" id="test_code_input" placeholder="Test kodini yozing..." style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ccc; display:none;">
-    
-    <div id="questions-list"></div>
+<h1>📘 Matematika – Milliy Sertifikat</h1>
+
+<div class="card">
+    <h2>🔑 Test kodi</h2>
+    <input type="text" id="testCode" placeholder="Test kodini kiriting">
 </div>
 
-<div class="keyboard" id="kb">
-    <button class="key" onclick="press('1')">1</button>
-    <button class="key" onclick="press('2')">2</button>
-    <button class="key" onclick="press('3')">3</button>
-    <button class="key" onclick="press('4')">4</button>
-    <button class="key" onclick="press('5')">5</button>
-    <button class="key" onclick="press('6')">6</button>
-    <button class="key" onclick="press('7')">7</button>
-    <button class="key" onclick="press('8')">8</button>
-    <button class="key" onclick="press('9')">9</button>
-    <button class="key" onclick="press('0')">0</button>
-    <button class="key" onclick="press('+')">+</button>
-    <button class="key" onclick="press('-')">-</button>
-    <button class="key" onclick="press('*')">*</button>
-    <button class="key" onclick="press('/')">/</button>
-    <button class="key" onclick="press(',')">,</button>
-    <button class="key" onclick="press('√')">√</button>
-    <button class="key" onclick="press('π')">π</button>
-    <button class="key" onclick="press('(')">(</button>
-    <button class="key" onclick="press(')')">)</button>
-    <button class="key" onclick="backspace()" style="background:#ff4d4d; color:white;">⌫</button>
-    
-    <button class="btn-send" onclick="finish()">✅ TESTNI YAKUNLASH</button>
+<!-- 1–32 ABCD -->
+<div class="card">
+    <h2>1-savol</h2>
+    <div class="variant"><input type="radio" name="q1"> A</div>
+    <div class="variant"><input type="radio" name="q1"> B</div>
+    <div class="variant"><input type="radio" name="q1"> C</div>
+    <div class="variant"><input type="radio" name="q1"> D</div>
 </div>
+
+<!-- 33–35 ABCDEF -->
+<div class="card">
+    <h2>33-savol</h2>
+    <div class="variant"><input type="radio" name="q33"> A</div>
+    <div class="variant"><input type="radio" name="q33"> B</div>
+    <div class="variant"><input type="radio" name="q33"> C</div>
+    <div class="variant"><input type="radio" name="q33"> D</div>
+    <div class="variant"><input type="radio" name="q33"> E</div>
+    <div class="variant"><input type="radio" name="q33"> F</div>
+</div>
+
+<!-- 36–45 (a) (b) -->
+<div class="card">
+    <h2>36 (a)</h2>
+    <math-field id="q36a"></math-field>
+</div>
+
+<div class="card">
+    <h2>36 (b)</h2>
+    <math-field id="q36b"></math-field>
+</div>
+
+<div class="card">
+    <h2>45 (a)</h2>
+    <math-field id="q45a"></math-field>
+</div>
+
+<div class="card">
+    <h2>45 (b)</h2>
+    <math-field id="q45b"></math-field>
+</div>
+
+<button onclick="submitTest()">📤 Testni yuborish</button>
 
 <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get('mode');
-    const answers = {};
-    let activeQ = 36; // Klaviatura uchun boshlang'ich savol
-
-    if(mode === 'check') {
-        document.getElementById('test_code_input').style.display = 'block';
-    }
-
-    const container = document.getElementById('questions-list');
-
-    // 1-32 gacha (A,B,C,D)
-    for(let i=1; i<=32; i++) {
-        addOptions(i, ['A','B','C','D']);
-    }
-    // 33-35 gacha (A,B,C,D,E,F)
-    for(let i=33; i<=35; i++) {
-        addOptions(i, ['A','B','C','D','E','F']);
-    }
-    // 36-45 gacha (Yozma - Klaviatura bilan)
-    for(let i=36; i<=45; i++) {
-        const div = document.createElement('div');
-        div.innerHTML = `<b>${i}-savol (a):</b>
-            <div class="math-input-container" onclick="activeQ=${i}">
-                <div class="math-display" id="display-${i}"></div>
-            </div>`;
-        container.appendChild(div);
-    }
-
-    function addOptions(num, opts) {
-        const row = document.createElement('div');
-        row.className = 'q-row';
-        let buttons = opts.map(o => `<div class="opt" onclick="sel(${num},'${o}',this)">${o}</div>`).join('');
-        row.innerHTML = `<div class="q-num">${num}.</div><div class="options">${buttons}</div>`;
-        container.appendChild(row);
-    }
-
-    function sel(q, val, el) {
-        const parent = el.parentElement;
-        parent.querySelectorAll('.opt').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        answers[q] = val;
-    }
-
-    function press(val) {
-        if(!answers[activeQ]) answers[activeQ] = "";
-        answers[activeQ] += val;
-        document.getElementById('display-' + activeQ).innerText = answers[activeQ];
-    }
-
-    function backspace() {
-        if(answers[activeQ]) {
-            answers[activeQ] = answers[activeQ].slice(0, -1);
-            document.getElementById('display-' + activeQ).innerText = answers[activeQ];
-        }
-    }
-
-    function finish() {
-        let finalData = "";
-        for(let i=1; i<=45; i++) {
-            finalData += (answers[i] || "?") + (i === 45 ? "" : "|");
-        }
-        
-        if(mode === 'create') {
-            tg.sendData(JSON.stringify({action: 'create', keys: finalData}));
-        } else {
-            const code = document.getElementById('test_code_input').value;
-            if(!code) return alert("Test kodini kiriting!");
-            tg.sendData(JSON.stringify({action: 'check', code: code, answers: finalData}));
-        }
-    }
+function submitTest() {
+    alert("Test yuborildi (keyingi bosqichda backendga jo‘natamiz)");
+}
 </script>
+
 </body>
 </html>
-
