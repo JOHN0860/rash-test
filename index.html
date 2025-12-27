@@ -5,139 +5,169 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Matematika – Milliy Sertifikat</title>
 
-<script src="https://unpkg.com/mathlive"></script>
+<!-- MathLive -->
+<script src="https://unpkg.com/mathlive/dist/mathlive.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/mathlive/dist/mathlive.core.css">
+<link rel="stylesheet" href="https://unpkg.com/mathlive/dist/mathlive.css">
 
 <style>
-body {
-    margin: 0;
-    padding: 12px;
-    font-family: system-ui, sans-serif;
-    background: #f2f4f7;
+body{
+  font-family: system-ui, sans-serif;
+  background:#f5f6f8;
+  margin:0;
 }
-h1 {
-    font-size: 20px;
+.container{
+  max-width:720px;
+  margin:auto;
+  padding:10px;
 }
-.card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 12px;
-    margin-bottom: 14px;
+.card{
+  background:#fff;
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:12px;
 }
-label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 6px;
+h2,h3{margin:0 0 10px}
+.variant{
+  padding:8px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  margin-bottom:6px;
 }
-.variant {
-    margin: 4px 0;
+.variant input{
+  transform:scale(1.3);
+  margin-right:8px;
 }
-math-field {
-    width: 100%;
-    min-height: 46px;
-    font-size: 20px;
-    border: 2px solid #f2b705;
-    border-radius: 10px;
-    padding: 6px;
+.nav{
+  position:sticky;
+  top:0;
+  background:#fff;
+  display:flex;
+  gap:6px;
+  padding:8px;
+  z-index:100;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
 }
-.kbd {
-    margin-top: 6px;
-    background: #f2b705;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 8px;
+.nav button{
+  flex:1;
+  padding:8px;
+  border:none;
+  border-radius:8px;
+  background:#e9ecef;
+  font-weight:600;
 }
-.submit {
-    width: 100%;
-    background: #0d6efd;
-    color: white;
-    border: none;
-    padding: 14px;
-    font-size: 17px;
-    border-radius: 14px;
+math-field{
+  width:100%;
+  min-height:60px;
+  border:2px solid #f0b400;
+  border-radius:10px;
+  padding:10px;
+  font-size:18px;
+}
+.submit{
+  width:100%;
+  padding:14px;
+  font-size:16px;
+  background:#0d6efd;
+  color:#fff;
+  border:none;
+  border-radius:12px;
 }
 </style>
 </head>
+
 <body>
 
-<h1>📘 Matematika – Milliy Sertifikat</h1>
+<div class="nav">
+  <button onclick="go('s1')">1–32</button>
+  <button onclick="go('s2')">33–35</button>
+  <button onclick="go('s3')">36–45</button>
+</div>
+
+<div class="container">
+
+<div class="card">
+  <h3>🔑 Test kodi</h3>
+  <input type="text" placeholder="Test kodini kiriting" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;">
+</div>
 
 <!-- 1–32 -->
-<h2>1–32 savollar</h2>
-<div id="q1_32"></div>
-
-<!-- 33–35 -->
-<h2>33–35 savollar</h2>
-<div id="q33_35"></div>
-
-<!-- 36–45 -->
-<h2>36–45 savollar</h2>
-<div id="q36_45"></div>
-
-<button class="submit">✅ TESTNI YAKUNLASH</button>
+<div id="s1" class="card">
+<h2>📘 1–32 savollar</h2>
 
 <script>
-// 1–32 (ABCD)
-for (let i = 1; i <= 32; i++) {
-    document.getElementById("q1_32").innerHTML += `
-    <div class="card">
-        <label>${i}-savol</label>
-        ${["A","B","C","D"].map(v =>
-            `<div class="variant">
-                <input type="radio" name="q${i}"> ${v}
-             </div>`).join("")}
-    </div>`;
+for(let i=1;i<=32;i++){
+ document.write(`
+ <div class="card">
+  <b>${i}-savol</b>
+  ${['A','B','C','D'].map(v=>`
+   <label class="variant">
+    <input type="radio" name="q${i}">${v}
+   </label>`).join('')}
+ </div>
+ `)
+}
+</script>
+</div>
+
+<!-- 33–35 -->
+<div id="s2" class="card">
+<h2>📗 33–35 savollar</h2>
+
+<script>
+for(let i=33;i<=35;i++){
+ document.write(`
+ <div class="card">
+  <b>${i}-savol</b>
+  ${['A','B','C','D','E','F'].map(v=>`
+   <label class="variant">
+    <input type="radio" name="q${i}">${v}
+   </label>`).join('')}
+ </div>
+ `)
+}
+</script>
+</div>
+
+<!-- 36–45 -->
+<div id="s3" class="card">
+<h2>📕 36–45 savollar</h2>
+
+<script>
+for(let i=36;i<=45;i++){
+ document.write(`
+ <div class="card">
+  <b>${i}-savol (a)</b>
+  <math-field></math-field>
+ </div>
+ <div class="card">
+  <b>${i}-savol (b)</b>
+  <math-field></math-field>
+ </div>
+ `)
+}
+</script>
+</div>
+
+<button class="submit" onclick="finish()">✅ Testni yakunlash</button>
+
+</div>
+
+<script>
+function go(id){
+ document.getElementById(id).scrollIntoView({behavior:"smooth"});
 }
 
-// 33–35 (ABCDEF)
-for (let i = 33; i <= 35; i++) {
-    document.getElementById("q33_35").innerHTML += `
-    <div class="card">
-        <label>${i}-savol</label>
-        ${["A","B","C","D","E","F"].map(v =>
-            `<div class="variant">
-                <input type="radio" name="q${i}"> ${v}
-             </div>`).join("")}
-    </div>`;
+function finish(){
+ if(confirm("Testni yakunlaysizmi? Qayta o‘zgartirib bo‘lmaydi!")){
+   alert("Test yuborildi (keyingi bosqich: Telegram bot)");
+ }
 }
 
-// 36–45 (a,b)
-for (let i = 36; i <= 45; i++) {
-    ["a","b"].forEach(v => {
-        document.getElementById("q36_45").innerHTML += `
-        <div class="card">
-            <label>${i}-savol (${v})</label>
-            <math-field id="q${i}${v}"></math-field>
-            <button class="kbd" onclick="openKB('q${i}${v}')">
-                🧮 Klaviatura
-            </button>
-        </div>`;
-    });
-}
-
-// klaviatura
-function openKB(id) {
-    const mf = document.getElementById(id);
-    mf.focus();
-    mf.executeCommand("showVirtualKeyboard");
-}
-
-MathLive.makeSharedVirtualKeyboard({
-    customVirtualKeyboards: {
-        math: {
-            label: "Math",
-            rows: [
-                ["7","8","9","+","-"],
-                ["4","5","6","*","/"],
-                ["1","2","3","(",")"],
-                ["0",".","\\frac{#@}{#?}","\\sqrt{#0}","\\pi"]
-            ]
-        }
-    }
-});
-
-MathLive.setOptions({
-    virtualKeyboardMode: "manual",
-    virtualKeyboards: "math"
+document.querySelectorAll("math-field").forEach(mf=>{
+ mf.addEventListener("focus",()=>{
+   mf.executeCommand("showVirtualKeyboard");
+ });
 });
 </script>
 
