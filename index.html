@@ -3,15 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Matematika – Milliy Sertifikat</title>
 
 <script src="https://unpkg.com/mathlive"></script>
 
 <style>
-* {
-    box-sizing: border-box;
-}
 body {
     margin: 0;
     padding: 12px;
@@ -20,7 +16,6 @@ body {
 }
 h1 {
     font-size: 20px;
-    margin-bottom: 12px;
 }
 .card {
     background: #fff;
@@ -32,6 +27,9 @@ label {
     font-weight: 600;
     display: block;
     margin-bottom: 6px;
+}
+.variant {
+    margin: 4px 0;
 }
 math-field {
     width: 100%;
@@ -47,7 +45,6 @@ math-field {
     border: none;
     padding: 6px 10px;
     border-radius: 8px;
-    font-size: 13px;
 }
 .submit {
     width: 100%;
@@ -62,38 +59,68 @@ math-field {
 </head>
 <body>
 
-<h1>📘 36–45 Savollar</h1>
+<h1>📘 Matematika – Milliy Sertifikat</h1>
 
-<div id="box"></div>
+<!-- 1–32 -->
+<h2>1–32 savollar</h2>
+<div id="q1_32"></div>
+
+<!-- 33–35 -->
+<h2>33–35 savollar</h2>
+<div id="q33_35"></div>
+
+<!-- 36–45 -->
+<h2>36–45 savollar</h2>
+<div id="q36_45"></div>
 
 <button class="submit">✅ TESTNI YAKUNLASH</button>
 
 <script>
-const box = document.getElementById("box");
+// 1–32 (ABCD)
+for (let i = 1; i <= 32; i++) {
+    document.getElementById("q1_32").innerHTML += `
+    <div class="card">
+        <label>${i}-savol</label>
+        ${["A","B","C","D"].map(v =>
+            `<div class="variant">
+                <input type="radio" name="q${i}"> ${v}
+             </div>`).join("")}
+    </div>`;
+}
 
-// 36–45 a va b
+// 33–35 (ABCDEF)
+for (let i = 33; i <= 35; i++) {
+    document.getElementById("q33_35").innerHTML += `
+    <div class="card">
+        <label>${i}-savol</label>
+        ${["A","B","C","D","E","F"].map(v =>
+            `<div class="variant">
+                <input type="radio" name="q${i}"> ${v}
+             </div>`).join("")}
+    </div>`;
+}
+
+// 36–45 (a,b)
 for (let i = 36; i <= 45; i++) {
-    ["a", "b"].forEach(v => {
-        box.innerHTML += `
+    ["a","b"].forEach(v => {
+        document.getElementById("q36_45").innerHTML += `
         <div class="card">
             <label>${i}-savol (${v})</label>
             <math-field id="q${i}${v}"></math-field>
             <button class="kbd" onclick="openKB('q${i}${v}')">
                 🧮 Klaviatura
             </button>
-        </div>
-        `;
+        </div>`;
     });
 }
 
-// klaviaturani ochish
+// klaviatura
 function openKB(id) {
     const mf = document.getElementById(id);
     mf.focus();
     mf.executeCommand("showVirtualKeyboard");
 }
 
-// maxsus matematik klaviatura
 MathLive.makeSharedVirtualKeyboard({
     customVirtualKeyboards: {
         math: {
@@ -108,7 +135,6 @@ MathLive.makeSharedVirtualKeyboard({
     }
 });
 
-// default qilib shu klaviatura chiqsin
 MathLive.setOptions({
     virtualKeyboardMode: "manual",
     virtualKeyboards: "math"
