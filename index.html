@@ -3,142 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Matematika – Milliy Sertifikat</title>
+<title>Test yechish</title>
 
+<link rel="stylesheet" href="https://unpkg.com/mathlive/dist/mathlive.core.css">
+<link rel="stylesheet" href="https://unpkg.com/mathlive/dist/mathlive.css">
 <script src="https://unpkg.com/mathlive"></script>
 
 <style>
-body {
-    margin: 0;
-    padding: 12px;
-    font-family: system-ui, sans-serif;
-    background: #f2f4f7;
-}
-h1 {
-    font-size: 20px;
-}
-.card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 12px;
-    margin-bottom: 14px;
-}
-label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 6px;
-}
-.variant {
-    margin: 4px 0;
-}
-math-field {
-    width: 100%;
-    min-height: 46px;
-    font-size: 20px;
-    border: 2px solid #f2b705;
-    border-radius: 10px;
-    padding: 6px;
-}
-.kbd {
-    margin-top: 6px;
-    background: #f2b705;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 8px;
-}
-.submit {
-    width: 100%;
-    background: #0d6efd;
-    color: white;
-    border: none;
-    padding: 14px;
-    font-size: 17px;
-    border-radius: 14px;
-}
+body{font-family:Arial;background:#f4f6f8;padding:10px}
+.card{background:#fff;border-radius:12px;padding:12px;margin-bottom:12px}
+.variant{padding:10px 14px;border-radius:10px;background:#e0e0e0;cursor:pointer}
+.variant.active{background:#1976d2;color:#fff}
+.variants{display:flex;gap:8px;flex-wrap:wrap}
+.mathbox{width:100%;min-height:50px;font-size:22px;border:2px solid #ccc;border-radius:10px;padding:8px}
+button{width:100%;padding:14px;font-size:18px;border:none;border-radius:12px;background:#1976d2;color:#fff}
+input{width:100%;padding:12px;font-size:18px;border-radius:10px;border:2px solid #ccc}
 </style>
 </head>
+
 <body>
 
-<h1>📘 Matematika – Milliy Sertifikat</h1>
+<div class="card">
+  <h3>Test kodi</h3>
+  <input id="testCode" placeholder="Masalan: MT-834921">
+  <button onclick="loadTest()">Testni ochish</button>
+</div>
 
-<!-- 1–32 -->
-<h2>1–32 savollar</h2>
-<div id="q1_32"></div>
-
-<!-- 33–35 -->
-<h2>33–35 savollar</h2>
-<div id="q33_35"></div>
-
-<!-- 36–45 -->
-<h2>36–45 savollar</h2>
-<div id="q36_45"></div>
-
-<button class="submit">✅ TESTNI YAKUNLASH</button>
+<div id="testArea"></div>
 
 <script>
-// 1–32 (ABCD)
-for (let i = 1; i <= 32; i++) {
-    document.getElementById("q1_32").innerHTML += `
-    <div class="card">
-        <label>${i}-savol</label>
-        ${["A","B","C","D"].map(v =>
-            `<div class="variant">
-                <input type="radio" name="q${i}"> ${v}
-             </div>`).join("")}
-    </div>`;
+let testData = null;
+let answers = {};
+
+function loadTest(){
+  const code = document.getElementById("testCode").value.trim();
+  const saved = localStorage.getItem("TEST_"+code);
+  if(!saved){
+    alert("❌ Noto‘g‘ri test kodi");
+    return;
+  }
+  testData = JSON.parse(saved);
+  renderTest();
 }
 
-// 33–35 (ABCDEF)
-for (let i = 33; i <= 35; i++) {
-    document.getElementById("q33_35").innerHTML += `
-    <div class="card">
-        <label>${i}-savol</label>
-        ${["A","B","C","D","E","F"].map(v =>
-            `<div class="variant">
-                <input type="radio" name="q${i}"> ${v}
-             </div>`).join("")}
-    </div>`;
-}
+function renderTest(){
+  const area = document.getElementById("testArea");
+  area.innerHTML = "";
 
-// 36–45 (a,b)
-for (let i = 36; i <= 45; i++) {
-    ["a","b"].forEach(v => {
-        document.getElementById("q36_45").innerHTML += `
-        <div class="card">
-            <label>${i}-savol (${v})</label>
-            <math-field id="q${i}${v}"></math-field>
-            <button class="kbd" onclick="openKB('q${i}${v}')">
-                🧮 Klaviatura
-            </button>
-        </div>`;
-    });
-}
+  testData.questions.forEach(q=>{
+    let html = `<div class="card"><b>${q.id}-savol</b>`;
 
-// klaviatura
-function openKB(id) {
-    const mf = document.getElementById(id);
-    mf.focus();
-    mf.executeCommand("showVirtualKeyboard");
-}
-
-MathLive.makeSharedVirtualKeyboard({
-    customVirtualKeyboards: {
-        math: {
-            label: "Math",
-            rows: [
-                ["7","8","9","+","-"],
-                ["4","5","6","*","/"],
-                ["1","2","3","(",")"],
-                ["0",".","\\frac{#@}{#?}","\\sqrt{#0}","\\pi"]
-            ]
-        }
+    if(q.type==="variant"){
+      html+=`<div class="variants">`;
+      q.options.forEach(o=>{
+        html+=`<div class="variant" onclick="pick(${q.id},'${o}',this)">${o}</div>`;
+      });
+      html+=`</div>`;
     }
-});
 
-MathLive.setOptions({
-    virtualKeyboardMode: "manual",
-    virtualKeyboards: "math"
-});
+    if(q.type==="math"){
+      html+=`
+        <div>(a)</div>
+        <math-field class="mathbox"
+          virtual-keyboard-mode="onfocus"
+          oninput="answers[${q.id+'_a'}]=this.value"></math-field>
+        <div>(b)</div>
+        <math-field class="mathbox"
+          virtual-keyboard-mode="onfocus"
+          oninput="answers[${q.id+'_b'}]=this.value"></math-field>`;
+    }
+
+    html+=`</div>`;
+    area.innerHTML+=html;
+  });
+
+  area.innerHTML+=`<button onclick="finish()">Yuborish</button>`;
+}
+
+function pick(id,val,el){
+  el.parentElement.querySelectorAll(".variant").forEach(v=>v.classList.remove("active"));
+  el.classList.add("active");
+  answers[id]=val;
+}
+
+function finish(){
+  let correct=0;
+  testData.questions.forEach(q=>{
+    if(q.type==="variant" && answers[q.id]===q.correct) correct++;
+    if(q.type==="math"){
+      if(answers[q.id+'_a']===q.correct.a) correct++;
+      if(answers[q.id+'_b']===q.correct.b) correct++;
+    }
+  });
+
+  const total=testData.total;
+  const score=(correct/total)*75;
+  let grade="Fail";
+  if(score>=70) grade="A+";
+  else if(score>=60) grade="A";
+  else if(score>=50) grade="B";
+  else if(score>=46) grade="C";
+
+  alert(`✅ Natija:
+To‘g‘ri: ${correct}
+Noto‘g‘ri: ${total-correct}
+Ball: ${score.toFixed(1)}
+Daraja: ${grade}`);
+}
 </script>
 
 </body>
